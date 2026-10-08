@@ -5,9 +5,53 @@
     "subtitle": "Advice Practice for Claude Code: what needs attention, rendered by npm run view",
     "sections": [
       {
-        "title": "Needs attention",
-        "note": "TODO(author): point this at the industry's attention view (overdue, stuck, quiet).",
-        "sql": "select 'replace me' as item, 'TODO(author)' as why"
+        "title": "Ongoing fee consents",
+        "note": "Lapsed arrangements must stop charging. Open windows closing inside 60 days need a signed consent.",
+        "sql": "select reference, client, adviser, annual_fee, currency, terminates_on, window_state, days_left from consent_windows where window_state = 'lapsed' or (window_state = 'open' and days_left <= 60 and (last_consent is null or last_consent < window_opens)) order by terminates_on"
+      },
+      {
+        "title": "Reviews overdue",
+        "note": "A client paying an ongoing fee with no review is the fee-for-no-service problem.",
+        "sql": "select reference, name, adviser, service_package, due_on, days_overdue, pays_ongoing_fee from review_schedule where days_overdue > 0 order by days_overdue desc"
+      },
+      {
+        "title": "Open complaints",
+        "sql": "select k.reference, c.name as client, c.jurisdiction, k.received_on, k.acknowledged_on, current_date - k.received_on as days_open, k.summary from complaints k join clients c on c.id = k.client_id where k.responded_on is null order by k.received_on"
+      },
+      {
+        "title": "Compliance findings",
+        "note": "Each rule and its source is in docs/compliance.md.",
+        "sql": "select rule, record, client, finding from compliance_findings order by severity, rule, record"
+      }
+    ]
+  },
+  {
+    "name": "fee-book",
+    "title": "Fee book",
+    "subtitle": "Ongoing fee revenue by adviser, and what is at risk",
+    "sections": [
+      {
+        "title": "By adviser",
+        "sql": "select coalesce(w.adviser, '(none)') as adviser, w.currency, count(*)::int as arrangements, sum(w.annual_fee) as annual_fees, coalesce(sum(w.annual_fee) filter (where w.window_state = 'lapsed'), 0) as lapsed, coalesce(sum(w.annual_fee) filter (where r.days_overdue > 30), 0) as review_overdue from consent_windows w join fee_arrangements f on f.id = w.id left join review_schedule r on r.id = f.client_id group by 1, 2 order by 2, 1"
+      },
+      {
+        "title": "Every arrangement",
+        "sql": "select reference, client, adviser, annual_fee, currency, reference_day, terminates_on, window_state, last_consent from consent_windows order by adviser, terminates_on"
+      }
+    ]
+  },
+  {
+    "name": "pipeline",
+    "title": "Advice pipeline",
+    "subtitle": "Every statement of advice and advice record still in progress",
+    "sections": [
+      {
+        "title": "In progress",
+        "sql": "select reference, client, adviser, topic, document_kind, stage, days_in_stage, prepared_by, advice_fee from advice_pipeline order by array_position(array['fact find','research','drafting','compliance check','presented'], stage), days_in_stage desc"
+      },
+      {
+        "title": "CPD this year",
+        "sql": "select code, name, jurisdiction, cpd_year_ends, days_left, total_hours, technical, client_care, regulatory, ethics from cpd_progress order by days_left"
       }
     ]
   }

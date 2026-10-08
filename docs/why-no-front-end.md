@@ -1,24 +1,42 @@
 # Why there is no front end
 
-Xplan is a database with a subscription. The tables underneath it are ordinary: a few entities, a few relationships, a handful of workflows you repeat every week. What you pay for is the layer on top that lets people who do not write SQL get at those tables. Screens, filters, dashboards, forms.
+Xplan is several products in one subscription: a client database, a workflow engine, a modelling
+suite, research data and a document merge. The part an advice practice runs its week on is the
+first two. Clients, who their adviser is, when their review is due, which fee arrangements need a
+consent, which statements of advice are stuck, which complaints are on the clock. That is a handful
+of tables and a few questions asked every Monday.
 
-That layer used to be the whole product, because talking to a database was hard. It is not hard any more. Open this folder in Claude Code, describe what you want, and it writes the query, runs it, and explains the answer. Ask a question the dashboard never had a chart for and you still get an answer.
+The screens were there because the database was hard to talk to. It is not any more. Open this
+folder in Claude Code and ask "which consents close this month, and how much fee is that?" It runs
+the query and answers. Ask a question no Xplan report was built for, and it still answers.
 
 ## What you gain
 
-- **Better answers.** A dashboard shows what the vendor decided to chart. Here you ask your own question, in your own words, and get it answered against your own data.
-- **No seats.** Everyone who needs to look can look. The bill does not grow with headcount.
-- **Your data in your Postgres.** Plain tables. Back them up, query them from anything, leave any time. There is no export step because there is nothing to leave.
-- **A process that matches you.** When your way of working changes, you add a command. You do not wait for a feature request to clear.
+- **Answers the reports do not give.** Fee at risk by adviser, clients paying for a review they have
+  not had, advice files stuck in compliance check for three weeks, all from one question.
+- **Rules you can read.** Every compliance check is written down in `docs/compliance.md` with its
+  source, and is one query you can change.
+- **No seats and no modules.** A paraplanner, a client services officer and the principal can all
+  ask. Nothing is priced per user.
+- **Your records in your own Postgres.** Back them up, connect them to anything, leave any time.
 
-## What you give up
+## What a screen gives that this does not
 
-- **A visual board.** Stages are a table you ask about, not cards you drag.
-- **A phone app.** It runs where Claude Code runs.
-- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version for businesses that want someone to call.
+- **Modelling.** Cash-flow projections, Centrelink, tax and insurance needs calculators are not here.
+- **Research and platform data feeds.** Product research, fund data and nightly platform holdings
+  are not here.
+- **Document merge.** Your statement of advice template stays where it is. This tracks the file and
+  holds the scope and reasons; it does not write the document.
+- **A client portal and a phone app.** It runs where Claude Code runs.
+- **A vendor help desk.** This is open source. Enterprise DNA supports the installed version.
+
+Every one of those can be connected or built for a practice that needs it: a platform data feed, a
+web front end for client services, a portal. That is the customised version.
 
 ## Who this fits
 
-Small teams who already use Claude Code, or who would rather learn to ask than learn another interface. If your team needs a screen to look at all day, keep Xplan. If you need the answers more than the screens, this is cheaper, faster and yours.
+Practices whose Xplan bill is mostly paying for the client file and the review cycle, who already
+model in a separate tool, and who would rather ask than click. If your paraplanners live inside
+Xplan's modelling all day, keep it for that and move the rest.
 
 Installed and run for you: https://enterprisedna.co/omni/instead-of/xplan

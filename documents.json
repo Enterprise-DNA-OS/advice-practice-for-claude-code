@@ -1,11 +1,37 @@
 [
   {
-    "name": "example",
-    "title": "TODO(author): the first document this industry must produce",
-    "for_each": "select gen_random_uuid() as id, 'Example' as name",
+    "name": "consent-form",
+    "title": "Ongoing fee arrangement: renewal consent",
+    "for_each": "select f.id, f.reference || ' ' || c.name as name from fee_arrangements f join clients c on c.id = f.client_id where f.status = 'active' and c.jurisdiction = 'AU'",
     "file": "name",
     "sections": [
-      { "title": "Details", "sql": "select 'replace me' as item, $1::text as record_id" }
+      { "title": "Client and adviser", "sql": "select c.name as client, a.name as adviser, a.registration as adviser_number, f.reference as arrangement from fee_arrangements f join clients c on c.id = f.client_id left join advisers a on a.id = c.adviser_id where f.id = $1" },
+      { "title": "Services you are entitled to over the next twelve months", "sql": "select btrim(s) as service from fee_arrangements f, unnest(string_to_array(f.services, ',')) as s where f.id = $1" },
+      { "title": "The fee", "sql": "select f.annual_fee as fee_for_twelve_months, f.currency, coalesce(nullif(f.accounts, ''), 'Invoiced') as deducted_from from fee_arrangements f where f.id = $1" },
+      { "title": "Dates", "note": "If this consent is not signed by the termination date, the arrangement ends on that date and no further fees are charged.", "sql": "select f.next_reference_day as reference_day, (f.next_reference_day + 150) as terminates_if_not_signed from fee_arrangements f where f.id = $1" },
+      { "title": "Signed", "sql": "select '' as client_signature, '' as date where $1::uuid is not null" }
+    ]
+  },
+  {
+    "name": "review-summary",
+    "title": "Your review summary",
+    "for_each": "select c.id, c.reference || ' ' || c.name as name from clients c where c.status = 'active' and exists (select 1 from reviews r where r.client_id = c.id)",
+    "file": "name",
+    "sections": [
+      { "title": "Your latest review", "sql": "select r.held_on, a.name as adviser, r.summary as what_we_covered, r.actions as what_happens_next from reviews r left join advisers a on a.id = r.adviser_id where r.client_id = $1 order by r.held_on desc limit 1" },
+      { "title": "Your ongoing service", "sql": "select f.services, f.annual_fee, f.currency from fee_arrangements f where f.client_id = $1 and f.status = 'active'" },
+      { "title": "Advice in progress", "sql": "select topic, stage from advice_files where client_id = $1 and stage not in ('implemented', 'declined')" },
+      { "title": "Next review", "sql": "select due_on as next_review_due from review_schedule where id = $1" }
+    ]
+  },
+  {
+    "name": "complaints-register",
+    "title": "Complaints register",
+    "for_each": "select '00000000-0000-0000-0000-000000000000'::uuid as id, 'register' as name",
+    "file": "name",
+    "sections": [
+      { "title": "Open", "sql": "select k.reference, c.name as client, c.jurisdiction, k.received_on, k.acknowledged_on, current_date - k.received_on as days_open, k.summary from complaints k join clients c on c.id = k.client_id where k.responded_on is null and $1::uuid is not null order by k.received_on" },
+      { "title": "Closed", "sql": "select k.reference, c.name as client, k.received_on, k.responded_on, k.responded_on - k.received_on as days_to_respond, k.outcome from complaints k join clients c on c.id = k.client_id where k.responded_on is not null and $1::uuid is not null order by k.responded_on desc" }
     ]
   }
 ]

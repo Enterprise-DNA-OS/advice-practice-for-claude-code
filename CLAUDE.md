@@ -22,7 +22,28 @@ Fill this in once. A worker with context knows. A worker without it guesses.
 
 | When the operator asks for... | Use this |
 |---|---|
-| <!-- TODO(author): one row per slash command --> | `/...` |
+| What needs attention, what is late | `/attention` |
+| The Monday review, a note for the principal | `/weekly-review` |
+| Fee consents, renewals, what lapses | `/consents-due` |
+| Fee revenue, fees at risk | `/fee-book` |
+| Who is due a review | `/reviews-due` |
+| SOAs in progress, what is stuck | `/pipeline` |
+| Open an advice file, move it a stage | `/advice` |
+| Complaints | `/complaints` |
+| CPD hours | `/cpd` |
+| Are we compliant, what breaches a rule | `/compliance` |
+| A list of clients | `/clients` |
+| Everything on one client | `/client` |
+| A new client or prospect | `/add-client` |
+| A review was held | `/record-review` |
+| A consent came back signed | `/record-consent` |
+| Note a call, email or meeting | `/log` |
+| Invite a client to a review | `/draft-review-invite` |
+| The renewal consent form | `/draft-consent` |
+| Bring data across from Xplan | `/import` |
+| A backup | `/export` |
+| Change a field, a stage or a rule | `/customise` |
+| A new dashboard | `/new-view` |
 
 If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) and then propose a new command for it.
 
@@ -30,6 +51,9 @@ If an ask fits nothing here, run the CLI directly (`npm run <cli> -- --help`) an
 
 - Never send email or messages from here. Draft to `drafts/`, a person sends.
 - Never delete records without an explicit yes in this session. Prefer marking closed or archived.
+- Never back-date a consent, a review or a disclosure. Record the real date and let the compliance check say what it says.
+- Never write the reasons for advice from nothing. They come from the adviser, or from the file notes and fact find when the adviser asks, and are shown before saving.
+- Client records are personal information. Exports stay in `exports/` (ignored by git) and drafts in `drafts/`.
 - Never invent a record. If a name is ambiguous, list the candidates and ask.
 - The database is the source of truth. If the answer is not in it, say so.
 
